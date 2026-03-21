@@ -1,0 +1,6 @@
+#ifndef ACTION_ENUM_H
+#define ACTION_ENUM_H
+
+enum ACTION {NOTHING, NEXT, MODIFY_1, MODIFY_2, SHUTDOWN};
+
+#endif
