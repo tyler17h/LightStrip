@@ -12,13 +12,13 @@ Date: 3/20/2026
 
 class ButtonManager {
 public:
-    ButtonManager(int _pin);
+    ButtonManager();
     ~ButtonManager();
     bool isPressed();
     ACTION determineAction();
     
 private:
-    int pin;
+    int pin = 2;
     unsigned long initPressedTime = 0;
     bool isInitSet = false;
     ACTION action = NOTHING;

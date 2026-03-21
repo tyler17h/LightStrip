@@ -9,6 +9,7 @@ Date: 3/20/2026
 #define ADAFRUIT_H
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
+#include <Scheduler.h>
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -26,7 +27,7 @@ enum LIGHTMODE {SOLID, RAINBOW, CHASE, MODE_LIST_SIZE};
 
 class AdaFruit {
 public:
-    AdaFruit(int _pin);
+    AdaFruit();
     ~AdaFruit();
     void turnOn();
     void shutDown();
@@ -35,20 +36,38 @@ public:
     void setSolid();
     void setRainbow();
     void setTheaterChaseRainbow();
-    uint32_t Wheel(byte WheelPos);
+    void modify_1_Effect();
+    void modify_2_Effect();
+    void triggerModify_1_signal();
+    void SetModifier_1();
+    void triggerModify_2_signal();
+    void SetModifier_2();
+
 
 private:
     int pin = 4;
+    Scheduler scheduler;
     LIGHTMODE lightModeList[MODE_LIST_SIZE] = { SOLID, RAINBOW, CHASE };
     int lightmode = 0;
     bool isPowered = false;
     Adafruit_NeoPixel strip = Adafruit_NeoPixel(20, pin, NEO_GRB + NEO_KHZ800);
     uint32_t currentColor = strip.Color(100, 100, 100);
+    unsigned long fillWaitTime = 0;
+    unsigned long modifySignalWaitTime = 0;
+    unsigned long modifer_1_WaitTime = 0;
+    unsigned long modifer_2_WaitTime = 0;
 
-    int chaseCycle = 0;
-    int maxChaseCycles = 9000;
-    int stepOffset = 0;
-    int maxStepOffset = 3;
+    bool initModify_1_Trigger = false;
+    bool modify_1_activeFlag =false;
+    bool initModify_2_Trigger = false;
+    bool modify_2_activeFlag =false;
+
+    bool isIncremneting = false;
+    int baseBrightness = 200;
+    int brightness = 100;
+    int maxBrightness = 200;
+
+    //rainbow chase
     long firstPixelHue = 0;
     long maxFirstPixelHue = 5*65536;
 };

@@ -7,10 +7,10 @@ date: 3/20/2026
 
 #include "AdaFruit.h"
 
-AdaFruit::AdaFruit(int _pin) {
+AdaFruit::AdaFruit() {
     // Constructor
-    pin = _pin;
     strip.begin();
+    strip.setBrightness(baseBrightness);
 }
 
 AdaFruit::~AdaFruit() {
@@ -23,12 +23,18 @@ void AdaFruit::turnOn() {
 
 void AdaFruit::shutDown() {
     isPowered = false;
+    initModify_1_Trigger = false;
+    initModify_2_Trigger = false;
     strip.clear();
     strip.show();
 }
 
 void AdaFruit::nextColor() {
     if (isPowered) {
+        modify_1_activeFlag = false;
+        modify_2_activeFlag = false;
+        brightness = baseBrightness;
+        strip.setBrightness(brightness);
         lightmode = (lightmode + 1) % MODE_LIST_SIZE;
         fillStrip();
     }
@@ -39,22 +45,33 @@ void AdaFruit::nextColor() {
 }
 
 void AdaFruit::fillStrip() {
-    switch (lightmode)
-    {
-    case SOLID:
-        setSolid();
-        strip.fill(currentColor);
-        break;
-    case RAINBOW:
-        setRainbow();
-        break;
-    case CHASE:
-        setTheaterChaseRainbow();
-        break;
-    default:
-        break;
+    if (scheduler.hasWaited(10, fillWaitTime)) {
+        fillWaitTime = millis();
+
+        if (modify_1_activeFlag) {
+            modify_1_Effect();
+        }
+        if (modify_2_activeFlag) {
+            modify_2_Effect();
+        }
+
+        switch (lightmode)
+        {
+        case SOLID:
+            setSolid();
+            strip.fill(currentColor);
+            break;
+        case RAINBOW:
+            setRainbow();
+            break;
+        case CHASE:
+            setTheaterChaseRainbow();
+            break;
+        default:
+            break;
+        }
+        strip.show();
     }
-    strip.show();
 }
 
 void AdaFruit::setSolid() {
@@ -81,3 +98,76 @@ void AdaFruit::setTheaterChaseRainbow() {
     // strip.rainbow(firstPixelHue, 1, 255, 255, true);
     strip.show(); // Update strip with new contents
 }
+
+void AdaFruit::modify_1_Effect() {
+    if (scheduler.hasWaited(25, modifer_1_WaitTime)) {
+        if (isIncremneting) {
+            brightness++;
+            strip.setBrightness(brightness);
+            
+            isIncremneting = (brightness >= maxBrightness) ? false : true;
+        } else {
+            brightness--;
+            strip.setBrightness(brightness);
+            
+            isIncremneting = (brightness <= 0) ? true : false;
+        }
+    }
+}
+
+void AdaFruit::modify_2_Effect() {
+    if (scheduler.hasWaited(2000, modifer_1_WaitTime)) {
+        if (isIncremneting) {
+            brightness = maxBrightness;
+            strip.setBrightness(brightness);
+            
+            isIncremneting = (brightness == maxBrightness) ? false : true;
+        } else {
+            brightness = 0;
+            strip.setBrightness(brightness);
+            
+            isIncremneting = (brightness == 0) ? true : false;
+        }
+    }
+}
+
+void AdaFruit::triggerModify_1_signal() {
+    if (!initModify_1_Trigger) {
+        modifySignalWaitTime = millis();
+        initModify_1_Trigger = true;
+        Serial.println("clear");
+        strip.clear();
+        strip.show();
+    }
+    if (scheduler.hasWaited(350, modifySignalWaitTime)) {
+        Serial.println("lit");
+        fillStrip();
+    }
+}
+
+void AdaFruit::SetModifier_1() {
+    initModify_1_Trigger = false;
+    modify_1_activeFlag = true;
+}
+
+void AdaFruit::triggerModify_2_signal() {
+    if (!initModify_2_Trigger) {
+        initModify_1_Trigger = false;
+        modifySignalWaitTime = millis();
+        initModify_2_Trigger = true;
+        Serial.println("clear");
+        strip.clear();
+        strip.show();
+    }
+    if (scheduler.hasWaited(350, modifySignalWaitTime)) {
+        Serial.println("lit");
+        fillStrip();
+    }
+}
+
+void AdaFruit::SetModifier_2() {
+    modify_1_activeFlag = false;
+    initModify_2_Trigger = false;
+    modify_2_activeFlag = true;
+}
+

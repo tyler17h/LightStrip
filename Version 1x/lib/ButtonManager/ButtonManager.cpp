@@ -8,9 +8,8 @@ date: 3/20/2026
 #include "ButtonManager.h"
 #include <Adafruit_NeoPixel.h>
 
-ButtonManager::ButtonManager(int _pin) {
+ButtonManager::ButtonManager() {
     // Constructor
-    pin = _pin;
     pinMode(pin, INPUT_PULLUP);
 }
 
@@ -46,10 +45,10 @@ ACTION ButtonManager::determineAction() {
     else if (timePressed >= 50 && timePressed < 500) {
         action = NEXT;
     }
-    else if (timePressed >= 500 && timePressed < 1000) {
+    else if (timePressed >= 500 && timePressed < 2000) {
         action = MODIFY_1;
     }
-    else if (timePressed >= 1000 && timePressed < 1500) {
+    else if (timePressed >= 2000 && timePressed < 3000) {
         action = MODIFY_2;
     }
     else {
