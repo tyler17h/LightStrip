@@ -46,10 +46,13 @@ ACTION ButtonManager::determineAction() {
         action = NEXT;
     }
     else if (timePressed >= 500 && timePressed < 2000) {
-        action = MODIFY_1;
+        action = UNIQUE_MODIFIER;
     }
     else if (timePressed >= 2000 && timePressed < 3000) {
-        action = MODIFY_2;
+        action = BREATH_MODIFIER;
+    }
+    else if (timePressed >= 3000 && timePressed < 4500) {
+        action = STROBE_MODIFIER;
     }
     else {
         action = SHUTDOWN;

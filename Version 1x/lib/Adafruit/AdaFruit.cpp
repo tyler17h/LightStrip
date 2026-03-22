@@ -23,20 +23,26 @@ void AdaFruit::turnOn() {
 
 void AdaFruit::shutDown() {
     isPowered = false;
-    initModify_1_Trigger = false;
-    initModify_2_Trigger = false;
+    lastAciton = NOTHING;
     strip.clear();
     strip.show();
 }
 
 void AdaFruit::nextColor() {
+    if (isUniqueModifierActive) {
+        isUniqueModifierActive = false;
+        return;
+    }
     if (isPowered) {
-        modify_1_activeFlag = false;
-        modify_2_activeFlag = false;
+        lastAciton = NOTHING;
+        reps = 1;
+        isUniqueModifierActive = false;
+        isBreathModifierActive = false;
+        isStrobeModifierActive = false;
         brightness = baseBrightness;
         strip.setBrightness(brightness);
         lightmode = (lightmode + 1) % MODE_LIST_SIZE;
-        fillStrip();
+        setModeColor();
     }
     else {
         isPowered = true;
@@ -44,27 +50,52 @@ void AdaFruit::nextColor() {
     } 
 }
 
-void AdaFruit::fillStrip() {
-    if (scheduler.hasWaited(10, fillWaitTime)) {
-        fillWaitTime = millis();
-
-        if (modify_1_activeFlag) {
-            modify_1_Effect();
-        }
-        if (modify_2_activeFlag) {
-            modify_2_Effect();
-        }
-
-        switch (lightmode)
+void AdaFruit::setModeColor() {
+    switch (lightmode)
         {
         case SOLID:
             setSolid();
-            strip.fill(currentColor);
             break;
         case RAINBOW:
             setRainbow();
             break;
         case CHASE:
+            setTheaterChaseRainbow();
+            break;
+        default:
+            break;
+        }
+}
+
+void AdaFruit::fillStrip() {
+    if (scheduler.hasWaited(10, fillWaitTime)) {
+        fillWaitTime = millis();
+        if (isBreathModifierActive) {
+            breathEffect();
+        }
+        if (isStrobeModifierActive) {
+            strobeEffect();
+        }
+
+        switch (lightmode)
+        {
+        case SOLID:
+            if (isUniqueModifierActive) {
+                setUniqueSolidModifier();
+            }
+            strip.fill(currentColor);
+            break;
+        case RAINBOW:
+            if (isUniqueModifierActive) {
+                setUniqueRainbowModifier();
+            } else {
+                setRainbow();
+            }
+            break;
+        case CHASE:
+            if (isUniqueModifierActive) {
+                setUniqueChaseModifier();
+            }
             setTheaterChaseRainbow();
             break;
         default:
@@ -78,8 +109,26 @@ void AdaFruit::setSolid() {
     currentColor = strip.Color(100, 100, 100);
 }
 
+void AdaFruit::setUniqueSolidModifier() {
+
+    if (scheduler.hasWaited(20, uniqueModiferWaitTime)) {
+        uniqueModiferWaitTime = millis();
+        currentColor = strip.gamma32(strip.ColorHSV(currentHue));
+        currentHue += rainbowHueStep;
+    }
+}
+
 void AdaFruit::setRainbow() {
-    strip.rainbow(0, 1, 255, 150, true);
+    strip.rainbow(0, reps, 255, 150, true);
+}
+
+void AdaFruit::setUniqueRainbowModifier() {
+    if (scheduler.hasWaited(750, uniqueModiferWaitTime)) {
+        uniqueModiferWaitTime = millis();
+        reps = (reps + 1) % ledCount;
+        reps = (reps == 0) ? 1 : reps;  
+        strip.rainbow(0, reps, 255, 150, true);
+    }
 }
 
 void AdaFruit::setTheaterChaseRainbow() {
@@ -87,7 +136,7 @@ void AdaFruit::setTheaterChaseRainbow() {
     // Color wheel has a range of 65536 but it's OK if we roll over, so
     // just count from 0 to 5*65536. Adding 256 to firstPixelHue each time
     // means we'll make 5*65536/256 = 1280 passes through this loop:
-    firstPixelHue = (firstPixelHue += 256) % maxFirstPixelHue;
+    firstPixelHue = (firstPixelHue += chaseHue) % maxFirstPixelHue;
     // strip.rainbow() can take a single argument (first pixel hue) or
     // optionally a few extras: number of rainbow repetitions (default 1),
     // saturation and value (brightness) (both 0-255, similar to the
@@ -99,8 +148,22 @@ void AdaFruit::setTheaterChaseRainbow() {
     strip.show(); // Update strip with new contents
 }
 
-void AdaFruit::modify_1_Effect() {
-    if (scheduler.hasWaited(25, modifer_1_WaitTime)) {
+void AdaFruit::setUniqueChaseModifier() {
+    if (scheduler.hasWaited(750, uniqueModiferWaitTime)) {
+        uniqueModiferWaitTime = millis();
+        if (isHueIncrementing) {
+            chaseHue += chaseHueStep;
+            
+            isHueIncrementing = (chaseHue >= maxchaseHueStep) ? false : true;
+        } else {
+            chaseHue -= chaseHueStep;
+            isHueIncrementing = (chaseHue <= 0) ? true : false;
+        } 
+    } 
+}
+
+void AdaFruit::breathEffect() {
+    if (scheduler.hasWaited(25, breathModiferWaitTime)) {
         if (isIncremneting) {
             brightness++;
             strip.setBrightness(brightness);
@@ -115,8 +178,8 @@ void AdaFruit::modify_1_Effect() {
     }
 }
 
-void AdaFruit::modify_2_Effect() {
-    if (scheduler.hasWaited(2000, modifer_1_WaitTime)) {
+void AdaFruit::strobeEffect() {
+    if (scheduler.hasWaited(10, strobeModiferWaitTime)) {
         if (isIncremneting) {
             brightness = maxBrightness;
             strip.setBrightness(brightness);
@@ -131,10 +194,10 @@ void AdaFruit::modify_2_Effect() {
     }
 }
 
-void AdaFruit::triggerModify_1_signal() {
-    if (!initModify_1_Trigger) {
+void AdaFruit::triggerModiferSignal(ACTION action) {
+    if (lastAciton != action) {
+        lastAciton = action;
         modifySignalWaitTime = millis();
-        initModify_1_Trigger = true;
         Serial.println("clear");
         strip.clear();
         strip.show();
@@ -145,29 +208,21 @@ void AdaFruit::triggerModify_1_signal() {
     }
 }
 
-void AdaFruit::SetModifier_1() {
-    initModify_1_Trigger = false;
-    modify_1_activeFlag = true;
+void AdaFruit::setUniqueModifier() {
+    lastAciton = NOTHING;
+    isUniqueModifierActive = !isUniqueModifierActive;
 }
 
-void AdaFruit::triggerModify_2_signal() {
-    if (!initModify_2_Trigger) {
-        initModify_1_Trigger = false;
-        modifySignalWaitTime = millis();
-        initModify_2_Trigger = true;
-        Serial.println("clear");
-        strip.clear();
-        strip.show();
-    }
-    if (scheduler.hasWaited(350, modifySignalWaitTime)) {
-        Serial.println("lit");
-        fillStrip();
-    }
+
+void AdaFruit::setBreathModifier() { 
+    lastAciton = NOTHING;
+    isStrobeModifierActive = false;
+    isBreathModifierActive = !isBreathModifierActive;
 }
 
-void AdaFruit::SetModifier_2() {
-    modify_1_activeFlag = false;
-    initModify_2_Trigger = false;
-    modify_2_activeFlag = true;
+void AdaFruit::setStrobeModifier() {
+    isBreathModifierActive = false;
+    lastAciton = NOTHING;
+    isStrobeModifierActive = !isStrobeModifierActive;
 }
 

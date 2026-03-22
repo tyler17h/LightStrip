@@ -31,16 +31,22 @@ void loop() {
             adaFruit.nextColor();
         }
         break;
-    case MODIFY_1:
-        adaFruit.triggerModify_1_signal();
+    case UNIQUE_MODIFIER:
+        adaFruit.triggerModiferSignal(UNIQUE_MODIFIER);
         if (!button.isPressed()) {
-            adaFruit.SetModifier_1();
+            adaFruit.setUniqueModifier();
         }
         break;
-    case MODIFY_2:
-        adaFruit.triggerModify_2_signal();
+    case BREATH_MODIFIER:
+        adaFruit.triggerModiferSignal(BREATH_MODIFIER);
         if (!button.isPressed()) {
-            adaFruit.SetModifier_2();
+            adaFruit.setBreathModifier();
+        }
+        break;
+    case STROBE_MODIFIER:
+        adaFruit.triggerModiferSignal(STROBE_MODIFIER);
+        if (!button.isPressed()) {
+            adaFruit.setStrobeModifier();
         }
         break;
     case SHUTDOWN:
