@@ -21,9 +21,11 @@ void setup() {
 void loop() {
     action = button.determineAction();
     delay(1);
+
+    
     switch (action)
     {
-    case NOTHING:
+        case NOTHING:
         adaFruit.fillStrip();
         break;
     case NEXT:

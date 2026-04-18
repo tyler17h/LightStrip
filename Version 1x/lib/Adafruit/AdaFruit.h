@@ -13,6 +13,8 @@ Date: 3/20/2026
 
 #include "ActionEnum.h"
 
+#define ANALOG_PIN A2     // Voltage divider input
+
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
 // Parameter 3 = pixel type flags, add together as needed:
@@ -48,7 +50,9 @@ public:
     void setUniqueModifier();
     void setBreathModifier();
     void setStrobeModifier();
+    void voltagToColor();
 
+    bool getPowerState() {return isPowered;}
 
 private:
     int pin = 4;
@@ -90,6 +94,14 @@ private:
     long chaseHue = 256;
     int chaseHueStep = 64;
     long maxFirstPixelHue = 5*65536;
+
+    // Voltage range
+    const float V_MAX = 3.7;  // Green
+    const float V_MIN = 2.7;  // Red
+
+    // Arduino ADC reference voltage (5V board = 5.0, 3.3V board = 3.3)
+    const float AREF = 5.0;
+    const float ADC_RESOLUTION = 1023.0;
 };
 
 #endif // ADAFRUIT_H

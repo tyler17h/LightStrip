@@ -24,12 +24,13 @@ void AdaFruit::turnOn() {
 void AdaFruit::shutDown() {
     isPowered = false;
     lastAciton = NOTHING;
+    voltagToColor();
     strip.clear();
     strip.show();
 }
 
 void AdaFruit::nextColor() {
-    if (isUniqueModifierActive) {
+    if (isUniqueModifierActive && isPowered) {
         isUniqueModifierActive = false;
         return;
     }
@@ -119,7 +120,7 @@ void AdaFruit::setUniqueSolidModifier() {
 }
 
 void AdaFruit::setRainbow() {
-    strip.rainbow(0, reps, 255, 150, true);
+    strip.rainbow(0, reps, 255, brightness, true);
 }
 
 void AdaFruit::setUniqueRainbowModifier() {
@@ -127,7 +128,7 @@ void AdaFruit::setUniqueRainbowModifier() {
         uniqueModiferWaitTime = millis();
         reps = (reps + 1) % ledCount;
         reps = (reps == 0) ? 1 : reps;  
-        strip.rainbow(0, reps, 255, 150, true);
+        strip.rainbow(0, reps, 255, brightness, true);
     }
 }
 
@@ -198,12 +199,10 @@ void AdaFruit::triggerModiferSignal(ACTION action) {
     if (lastAciton != action) {
         lastAciton = action;
         modifySignalWaitTime = millis();
-        Serial.println("clear");
         strip.clear();
         strip.show();
     }
     if (scheduler.hasWaited(350, modifySignalWaitTime)) {
-        Serial.println("lit");
         fillStrip();
     }
 }
@@ -224,5 +223,35 @@ void AdaFruit::setStrobeModifier() {
     isBreathModifierActive = false;
     lastAciton = NOTHING;
     isStrobeModifierActive = !isStrobeModifierActive;
+}
+
+void AdaFruit::voltagToColor() {
+    int rawADC = analogRead(ANALOG_PIN);
+    float voltageOffset = 0.15;
+    float voltage = ((rawADC / ADC_RESOLUTION) * AREF) - voltageOffset;
+    float t = (voltage - V_MIN) / (V_MAX - V_MIN);
+    uint8_t red   = (uint8_t)((1.0 - t) * 255);  // 255 at min → 0 at max
+    uint8_t green = (uint8_t)(t * 255);           // 0 at min  → 255 at max
+    uint8_t blue  = 0;
+    if (voltage >= V_MAX) {
+        green = 255;
+        red = 0;
+    }  
+    if (voltage <= V_MIN) {
+        green = 0;
+        red = 255;
+    }  
+
+
+    strip.Color(0, 255, 0);
+    strip.show();
+    Serial.print("voltage");
+    Serial.println(voltage);
+    Serial.print('red');
+    Serial.println(red);
+    Serial.print('green');
+    Serial.println(green);
+
+    delay(1000);
 }
 
