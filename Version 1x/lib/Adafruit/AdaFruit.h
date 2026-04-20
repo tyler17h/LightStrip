@@ -10,7 +10,9 @@ Date: 3/20/2026
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
 #include <Scheduler.h>
-
+#include "Solid/Solid.h"
+#include "StaticRainbow/StaticRainbow.h"
+#include "RainbowChase/RainbowChase.h"
 #include "ActionEnum.h"
 
 #define ANALOG_PIN A2     // Voltage divider input
@@ -33,6 +35,7 @@ class AdaFruit {
 public:
     AdaFruit();
     ~AdaFruit();
+    void LightAction(ACTION action);
     void turnOn();
     void shutDown();
     void nextColor();
@@ -57,8 +60,8 @@ public:
 private:
     int pin = 4;
     uint16_t ledCount = 20;
-    Scheduler scheduler;
     LIGHTMODE lightModeList[MODE_LIST_SIZE] = { SOLID, RAINBOW, CHASE };
+    Scheduler scheduler;
     int lightmode = 0;
     bool isPowered = false;
     Adafruit_NeoPixel strip = Adafruit_NeoPixel(ledCount, pin, NEO_GRB + NEO_KHZ800);

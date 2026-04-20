@@ -17,6 +17,30 @@ AdaFruit::~AdaFruit() {
     // Destructor
 }
 
+void AdaFruit::LightAction(ACTION action) {
+    switch (action)
+    {
+    case NOTHING:
+        fillStrip();
+        break;
+    case NEXT:
+        nextColor();
+    case UNIQUE_MODIFIER:
+        triggerModiferSignal(action);
+        setUniqueModifier();
+    case BREATH_MODIFIER:
+        triggerModiferSignal(action);
+        setBreathModifier();
+    case STROBE_MODIFIER:
+        triggerModiferSignal(action);
+        setStrobeModifier();
+    case SHUTDOWN:
+        shutDown();
+    default:
+        break;
+    }
+}
+
 void AdaFruit::turnOn() {
     fillStrip();
 }

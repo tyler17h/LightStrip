@@ -1,0 +1,6 @@
+#ifndef MODES_ENUM_H
+#define MODES_ENUM_H
+
+enum LIGHTMODE {SOLID, RAINBOW, CHASE, MODE_LIST_SIZE};
+
+#endif

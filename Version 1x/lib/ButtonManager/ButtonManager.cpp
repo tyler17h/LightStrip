@@ -9,7 +9,6 @@ date: 3/20/2026
 #include <Adafruit_NeoPixel.h>
 
 ButtonManager::ButtonManager() {
-    // Constructor
     pinMode(pin, INPUT_PULLUP);
 }
 
