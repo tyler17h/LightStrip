@@ -14,9 +14,16 @@ Mode::~Mode() {
     // Destructor
 }
 
+void Mode::setLight(Light &light) {
+    light_ptr = &light;
+}
+
 void Mode::setColor() {
-    color = (red << 16) | (green << 8) | blue;
-    light->setColor(color);
-    Serial.println("Setting color");
+    color = light_ptr->getRGBColor(red, blue, green);
+    light_ptr->setColor(color);
     return;
+}
+
+void Mode::uniqueModifier() {
+
 }

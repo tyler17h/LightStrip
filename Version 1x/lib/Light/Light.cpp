@@ -10,7 +10,7 @@ date: 4/19/2026
 Light::Light() {
     strip.begin();
     strip.clear();
-    strip.setBrightness(baseBrightness);
+    strip.setBrightness(brightness);
 
     return;
 }
@@ -19,10 +19,17 @@ Light::~Light() {
     // Destructor
 }
 
+void Light::clearStrip() {
+    strip.clear();
+}
+
+void Light::showStrip() {
+    strip.show();
+}
+
 void Light::setColor(uint32_t color) {
     strip.fill(color);
-    Serial.print("color: ");
-    Serial.println(color);
+    strip.show();
     return;
 }
 

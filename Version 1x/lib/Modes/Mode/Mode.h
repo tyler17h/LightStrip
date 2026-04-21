@@ -15,10 +15,11 @@ class Mode {
 public:
     Mode();
     ~Mode();
+    void setLight(Light &light);
     void setColor();
     virtual void uniqueModifier();
     
-    Light* light;
+    Light* light_ptr;
     uint8_t red;
     uint8_t green;
     uint8_t blue;

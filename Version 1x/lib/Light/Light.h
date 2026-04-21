@@ -25,18 +25,21 @@ class Light {
 public:
     Light();
     ~Light();
-    void setColor(uint32_t);
+    void clearStrip();
+    void showStrip();
+    void setColor(uint32_t color);
     void setBrightness(int _brightness);
-    uint32_t getColor(uint16_t hue) { return strip.gamma32(strip.ColorHSV(hue)); }
+    int getBrightness() { return brightness; }
+    uint16_t getLedCount() { return ledCount; }
+    Adafruit_NeoPixel getStrip() { return strip; }
+    uint32_t getRGBColor(uint8_t r, uint8_t g, uint8_t b) { return strip.Color(r, g, b); }
+    uint32_t getHueColor(uint16_t hue) { return strip.gamma32(strip.ColorHSV(hue)); }
 private:
     int pin = 4;
     uint16_t ledCount = 20;
     Adafruit_NeoPixel strip = Adafruit_NeoPixel(ledCount, pin, NEO_GRB + NEO_KHZ800);
     
-    uint32_t currentColor = strip.Color(100, 100, 100);
-    int baseBrightness = 150;
-    int brightness = 150;
-    int maxBrightness = 200;
+    int brightness = 200;
 };
 
 #endif // LIGHT_H

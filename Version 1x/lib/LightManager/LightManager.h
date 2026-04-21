@@ -30,9 +30,9 @@ private:
     LIGHTMODE mode;
     Light light;
 
-    Solid solid;
-    StaticRainbow staticRainbow;
-    RainbowChase rainbowChase;
+    // Solid solid;
+    // StaticRainbow staticRainbow;
+    // RainbowChase rainbowChase;
 };
 
 #endif // LIGHTMANAGER_H

@@ -14,3 +14,11 @@ StaticRainbow::StaticRainbow() {
 StaticRainbow::~StaticRainbow() {
     // Destructor
 }
+
+// void StaticRainbow::setColor() {
+//     // int brightness = light_ptr->getBrightness();
+
+//     // light_ptr->getStrip().rainbow(0, reps, 255, brightness, true);
+//     // light_ptr->showStrip();
+//     return;
+// }

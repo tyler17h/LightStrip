@@ -14,7 +14,5 @@ void setup() {
 void loop() {
     action = buttonManager.determineAction();
     delay(1);
-    Serial.println("main loop");
-
-    // lightManager.LightAction(action);
+    lightManager.LightAction(action);
 }

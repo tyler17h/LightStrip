@@ -11,7 +11,7 @@ Date: 4/17/2026
 
 class Solid : public Mode {
 public:
-    Solid(Light &_light);
+    Solid();
     ~Solid();
     void uniqueModifier() override; 
 private:

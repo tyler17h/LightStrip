@@ -9,7 +9,10 @@ date: 4/19/2026
 
 LightManager::LightManager() {
     mode = modesManager.getCurrMode();
-
+    // solid.setLight(light);
+    // staticRainbow.setLight(light);
+    // rainbowChase.setLight(light);
+    
     return;
 }
 
@@ -17,15 +20,13 @@ LightManager::~LightManager() {
     // Destructor
 }
 
-void LightManager::LightAction(ACTION action) {
-    Serial.println("Light manager start");
-
+void LightManager::LightAction(ACTION action) {    
     switch (action)
     {
     case NOTHING:
         break;
     case NEXT:
-        // mode = modesManager.nextMode();
+        mode = modesManager.nextMode();
         break;
     case UNIQUE_MODIFIER:
         // triggerModifierSignal(action);
@@ -46,27 +47,28 @@ void LightManager::LightAction(ACTION action) {
         break;
     }
 
-    Serial.print("Action");
     updateLight();
 
     return;
 }
 
 void LightManager::updateLight() {
-    Serial.println("Update");
     updateColor();
     // updateModif();
 }
 
 void LightManager::updateColor() {
-    Serial.print(mode);
     switch (mode)
     {
     case SOLID:
-        Serial.println("Solid set color");
-        solid.setColor();
+        Serial.println("Show Solid");
+        // solid.setColor();
         break;
-    
+    case RAINBOW:
+        Serial.println("Show Rainbow");
+        // staticRainbow.setColor();
+    case CHASE:
+        Serial.println("Show Chase");
     default:
         break;
     }
