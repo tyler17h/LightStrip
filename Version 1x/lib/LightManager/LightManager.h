@@ -10,6 +10,7 @@ Date: 4/19/2026
 #include <Arduino.h>
 #include <Light.h>
 #include "ActionEnum.h"
+#include "SystemStateEnum.h"
 #include <Scheduler.h>
 #include <ModesManager.h>
 #include <Light.h>
@@ -22,7 +23,7 @@ public:
     LightManager();
     ~LightManager();
     void LightAction(ACTION action);
-    void checkForModifierTrigger();
+    void checkForTriggers();
     void modifierSignal();
     void performAction();
     void updateLight();
@@ -30,6 +31,7 @@ public:
     void triggerModifierSignal(ACTION action);
     
 private:
+    SYSTEMSTATE systemState = OFFLINE;
     Scheduler scheduler; 
     ModesManager modesManager;
     LIGHTMODE mode;

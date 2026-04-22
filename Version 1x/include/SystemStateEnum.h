@@ -1,0 +1,6 @@
+#ifndef SYSTEMSTATE_ENUM_H
+#define SYSTEMSTATE_ENUM_H
+
+enum SYSTEMSTATE {ONLINE, OFFLINE};
+
+#endif

@@ -22,26 +22,33 @@ LightManager::~LightManager() {
 
 void LightManager::LightAction(ACTION action) {    
     //track the action the user is going to take
-
     if (action != NOTHING) {
         lastAction = action;
-        checkForModifierTrigger();
+        checkForTriggers();
     }
     else {
         //only execute if there is an action being made
         if (lastAction != NOTHING) {
-            performAction();
-            lastAction = NOTHING;
+            if (systemState == OFFLINE) {
+                systemState = ONLINE;
+                Serial.println("Powered back on");
+            }
+            else {
+                performAction();
+                lastAction = NOTHING;
+            }
         }
     }
 
     //regardless of the action update the current light settings 
-    updateLight();
+    if (systemState == ONLINE) {
+        updateLight();
+    }
 
     return;
 }
 
-void LightManager::checkForModifierTrigger() {
+void LightManager::checkForTriggers() {
     //trigger the modifer signal flag
     switch (lastAction)
     {
@@ -66,7 +73,11 @@ void LightManager::checkForModifierTrigger() {
             lastModifier = STROBE_MODIFIER;
         }
         break;
-        default:
+    case SHUTDOWN:
+        Serial.println("Shutdown triggered");
+        systemState = OFFLINE;
+        break;
+    default:
         break;
     }
     
@@ -115,11 +126,6 @@ void LightManager::performAction() {
 
         // triggerModiferSignal(action);
         // setStrobeModifier();
-        break;
-    case SHUTDOWN:
-        //reached the end of the command list.  shutdown and enter low power mode
-        Serial.println("Shutdown triggered");
-        // shutDown();
         break;
     default:
         break;
