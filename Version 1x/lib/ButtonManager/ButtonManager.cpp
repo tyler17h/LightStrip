@@ -21,7 +21,7 @@ bool ButtonManager::isPressed() {
         return true;
     }
     else {
-        isInitSet = false;
+        isPressTimeSet = false;
         return false;
     }
 }
@@ -32,9 +32,9 @@ ACTION ButtonManager::determineAction() {
         return action;
     }
 
-    if (!isInitSet) {
+    if (!isPressTimeSet) {
         initPressedTime = millis();
-        isInitSet = true;
+        isPressTimeSet = true;
     }
 
     unsigned long timePressed = millis() - initPressedTime;

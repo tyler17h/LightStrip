@@ -14,5 +14,6 @@ void setup() {
 void loop() {
     action = buttonManager.determineAction();
     delay(1);
+    
     lightManager.LightAction(action);
 }

@@ -20,7 +20,7 @@ public:
 private:
     int pin = 2;
     unsigned long initPressedTime = 0;
-    bool isInitSet = false;
+    bool isPressTimeSet = false;
     ACTION action = NOTHING;
 };
 
