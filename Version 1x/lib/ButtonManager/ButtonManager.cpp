@@ -26,7 +26,7 @@ bool ButtonManager::isPressed() {
     }
 }
 
-ACTION ButtonManager::determineAction() {
+ACTION ButtonManager::getButtonAction() {
     if (!isPressed()) {
         action = NOTHING;
         return action;

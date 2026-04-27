@@ -25,6 +25,7 @@ class Light {
 public:
     Light();
     ~Light();
+    void shutDown();
     void clearStrip();
     void showStrip();
     void setColor(uint32_t color);

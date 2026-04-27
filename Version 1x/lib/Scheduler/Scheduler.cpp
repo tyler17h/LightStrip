@@ -22,3 +22,7 @@ bool Scheduler::hasWaited(unsigned long waitTime, unsigned long initWaitTime) {
     } 
     return false;
 }
+
+void Scheduler::newTask(unsigned int time, TASK task, unsigned int intervals = 1) {
+    
+}

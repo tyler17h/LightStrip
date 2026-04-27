@@ -15,7 +15,7 @@ public:
     ButtonManager();
     ~ButtonManager();
     bool isPressed();
-    ACTION determineAction();
+    ACTION getButtonAction();
     
 private:
     int pin = 2;

@@ -21,36 +21,16 @@ LightManager::~LightManager() {
 }
 
 void LightManager::LightAction(ACTION action) {    
-    //track the action the user is going to take
+    updateLight();
     if (action != NOTHING) {
-        lastAction = action;
-        checkForTriggers();
+        checkForTriggers(action);
     }
-    else {
-        //only execute if there is an action being made
-        if (lastAction != NOTHING) {
-            if (systemState == OFFLINE) {
-                systemState = ONLINE;
-                Serial.println("Powered back on");
-            }
-            else {
-                performAction();
-                lastAction = NOTHING;
-            }
-        }
-    }
-
-    //regardless of the action update the current light settings 
-    if (systemState == ONLINE) {
-        updateLight();
-    }
-
     return;
 }
 
-void LightManager::checkForTriggers() {
+void LightManager::checkForTriggers(ACTION action) {
     //trigger the modifer signal flag
-    switch (lastAction)
+    switch (action)
     {
     case UNIQUE_MODIFIER:
         if (!isModifierSignalActiveFlag) {
@@ -75,21 +55,20 @@ void LightManager::checkForTriggers() {
         break;
     case SHUTDOWN:
         Serial.println("Shutdown triggered");
-        systemState = OFFLINE;
         break;
     default:
         break;
     }
     
     if (isModifierSignalActiveFlag) {
-        modifierSignal();
+        modifierSignal(action);
     }
 
     return;
 }
 
-void LightManager::modifierSignal() {
-    if (lastAction == lastModifier) {
+void LightManager::modifierSignal(ACTION action) {
+    if (action == lastModifier) {
         isModifierSignalActiveFlag = true;
         modifySignalWaitTime = millis();
         // light.clearStrip();
@@ -101,8 +80,8 @@ void LightManager::modifierSignal() {
     }
 }
 
-void LightManager::performAction() {
-    switch (lastAction)
+void LightManager::performAction(ACTION action) {
+    switch (action)
     {
     case NEXT:
         Serial.println("Next mode");
@@ -155,6 +134,6 @@ void LightManager::updateColor() {
     }
 }
 
-void LightManager::triggerModifierSignal(ACTION action) {
-    
+void LightManager::shutdown() {
+    light.clearStrip();
 }

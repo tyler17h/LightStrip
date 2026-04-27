@@ -19,17 +19,29 @@ Light::~Light() {
     // Destructor
 }
 
+void Light::shutDown() {
+    clearStrip();
+    showStrip();
+
+    return;
+}
+
 void Light::clearStrip() {
     strip.clear();
+
+    return;
 }
 
 void Light::showStrip() {
     strip.show();
+
+    return;
 }
 
 void Light::setColor(uint32_t color) {
     strip.fill(color);
     strip.show();
+    
     return;
 }
 
