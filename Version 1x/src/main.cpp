@@ -15,21 +15,22 @@ void setup() {
   Serial.begin(9600);
 }
 
-void loop() {
-  action = buttonManager.getButtonAction();
-  delay(1);
-  
-  if (action == SHUTDOWN && systemManager.isSystemOnline()) {
-    Serial.println("SHUTTING DOWN");
-    systemManager.powerOffSystem();
-    lightManager.shutdown();
-    actionSetFlag = false;
-  }
-  else if (systemManager.isSystemOnline()) {
+
+void handleShutdown() {
+  Serial.println("SHUTTING DOWN");
+  systemManager.powerOffSystem();
+  lightManager.shutdown();
+  actionSetFlag = false;
+}
+
+void updateLightManager() {
     lightManager.LightAction(action);
+}
+
+void handleAction() {
+  if (action != NOTHING && action != SHUTDOWN) { 
+    actionSetFlag = true; 
   }
-  
-  if (action != NOTHING && action != SHUTDOWN) { actionSetFlag = true; }
   if (actionSetFlag == true) { 
     setAction = action;
     if (buttonManager.isPressed() == false) {
@@ -45,4 +46,19 @@ void loop() {
       }
     }
   }
+}
+
+void loop() {
+  action = buttonManager.getButtonAction();
+  delay(1);
+  
+  if (action == SHUTDOWN && systemManager.isSystemOnline()) {
+    handleShutdown();
+  }
+  else if (systemManager.isSystemOnline()) {
+    updateLightManager();
+  }
+  
+  handleAction();
+  
 }

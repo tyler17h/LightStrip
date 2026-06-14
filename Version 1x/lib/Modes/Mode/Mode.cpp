@@ -24,6 +24,10 @@ void Mode::setColor() {
     return;
 }
 
+void Mode::updatePattern() {
+    
+}
+
 void Mode::uniqueModifier() {
 
 }

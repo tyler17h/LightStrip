@@ -17,6 +17,7 @@ public:
     ~Mode();
     void setLight(Light &light);
     void setColor();
+    virtual void updatePattern();
     virtual void uniqueModifier();
     
     Light* light_ptr;
